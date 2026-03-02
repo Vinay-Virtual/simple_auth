@@ -85,6 +85,8 @@
         }
 
         .btn {
+            display: inline-block;
+            text-decoration: none;
             border: 0;
             border-radius: 10px;
             padding: 10px 14px;
@@ -122,6 +124,7 @@
         </ul>
 
         <div class="actions">
+            <a class="btn btn-primary" href="{{ route('password.change') }}">Change Password</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button class="btn btn-danger" type="submit">Logout</button>

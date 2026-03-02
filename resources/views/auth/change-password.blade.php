@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Change Password</title>
     <style>
         :root {
-            --bg: #f1f5f9;
+            --bg: #f8fafc;
             --card: #ffffff;
             --text: #0f172a;
             --muted: #64748b;
             --primary: #0ea5e9;
             --primary-dark: #0284c7;
-            --danger-bg: #fee2e2;
+            --success-bg: #dcfce7;
+            --success-text: #166534;
             --danger-text: #991b1b;
             --border: #e2e8f0;
         }
@@ -42,7 +43,7 @@
 
         h1 {
             margin: 0 0 8px;
-            font-size: 1.7rem;
+            font-size: 1.6rem;
         }
 
         .sub {
@@ -51,9 +52,17 @@
             font-size: 0.95rem;
         }
 
-        .field {
+        .success {
             margin-bottom: 14px;
+            border: 1px solid #86efac;
+            background: var(--success-bg);
+            color: var(--success-text);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
         }
+
+        .field { margin-bottom: 14px; }
 
         label {
             display: block;
@@ -62,7 +71,6 @@
             font-weight: 600;
         }
 
-        input[type="email"],
         input[type="password"] {
             width: 100%;
             border: 1px solid var(--border);
@@ -82,36 +90,6 @@
             margin-top: 5px;
             color: var(--danger-text);
             font-size: 0.82rem;
-        }
-
-        .global-errors {
-            list-style: none;
-            margin: 0 0 16px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            background: var(--danger-bg);
-            color: var(--danger-text);
-            font-size: 0.9rem;
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            gap: 12px;
-        }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--muted);
-            font-size: 0.9rem;
-        }
-
-        .remember input {
-            accent-color: var(--primary);
         }
 
         button {
@@ -147,63 +125,42 @@
 </head>
 <body>
     <div class="auth-card">
-        <h1>Welcome Back</h1>
-        <p class="sub">Login with your registered account details.</p>
+        <h1>Change Password</h1>
+        <p class="sub">Update your account password securely.</p>
 
-        {{-- @if ($errors->any())
-            <ul class="global-errors">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        @endif --}}
-        {{-- Show Error message if credential didn't match --}}
-        @error('credError')
-            <div class="global-errors">
-                {{ $message }}
-            </div>
-        @enderror
-
-        {{-- Show Success message after registration --}}
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+        @if (session('success'))
+            <div class="success">{{ session('success') }}</div>
         @endif
 
-        <form method="POST" action="{{ route('loginMatch') }}">
+        <form method="POST" action="{{ route('password.change.update') }}">
             @csrf
 
             <div class="field">
-                <label for="email">Email Address</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus>
-                @error('email')
+                <label for="current_password">Current Password</label>
+                <input id="current_password" type="password" name="current_password" required>
+                @error('current_password')
                     <div class="error">{{ $message }}</div>
                 @enderror
             </div>
 
             <div class="field">
-                <label for="password">Password</label>
+                <label for="password">New Password</label>
                 <input id="password" type="password" name="password" required>
                 @error('password')
                     <div class="error">{{ $message }}</div>
                 @enderror
             </div>
 
-            <div class="row">
-                <label class="remember" for="remember">
-                    <input id="remember" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                    Remember me
-                </label>
-
-                <a href="{{ route('password.request') }}">Forgot password?</a>
+            <div class="field">
+                <label for="password_confirmation">Confirm New Password</label>
+                <input id="password_confirmation" type="password" name="password_confirmation" required>
             </div>
 
-            <button type="submit">Login</button>
+            <button type="submit">Change Password</button>
         </form>
 
         <p class="bottom">
-            New here? <a href="{{ url('/register') }}">Register now</a>
+            Back to <a href="{{ route('dashboard') }}">Dashboard</a>
         </p>
     </div>
 </body>
