@@ -84,6 +84,16 @@
             justify-content: flex-end;
         }
 
+        .success {
+            margin: 0 0 14px;
+            border: 1px solid #86efac;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+
         .btn {
             display: inline-block;
             text-decoration: none;
@@ -103,6 +113,10 @@
     <div class="card">
         <h1>Dashboard</h1>
         <p class="sub">Welcome, you are logged in.</p>
+
+        @if (session('verified'))
+            <div class="success">{{ session('verified') }}</div>
+        @endif
 
         <ul class="meta">
             <li>

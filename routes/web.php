@@ -18,7 +18,11 @@ Route::get('/reset-password/{token}', [UserController::class, 'showResetPassword
 Route::post('/reset-password', [UserController::class, 'resetPassword'])->name('password.update');
 
 Route::middleware('auth')->group(function () {
-    Route::get('dashboard',[UserController::class,'dashboardPage'])->name('dashboard');
+    Route::get('/email/verify', [UserController::class, 'showEmailVerificationNotice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verifyEmail'])->middleware('signed')->name('verification.verify');
+    Route::post('/email/verification-notification', [UserController::class, 'sendVerificationEmail'])->middleware('throttle:6,1')->name('verification.send');
+
+    Route::get('dashboard',[UserController::class,'dashboardPage'])->middleware('verified')->name('dashboard');
     Route::get('/change-password', [UserController::class, 'showChangePasswordForm'])->name('password.change');
     Route::post('/change-password', [UserController::class, 'changePassword'])->name('password.change.update');
     Route::post('logout',[UserController::class,'logout'])->name('logout');

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\WelcomeMail;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,19 +20,22 @@ class UserController extends Controller
         
         $data = $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed'
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|confirmed|min:8'
         ], [
             'name.required'  => 'Name field is mandatory.',
             'name.min'       => 'Name must be at least 3 characters.',
             'email.required' => 'Email is required.',
             'email.email'    => 'Please enter a valid email address.',
+            'email.unique'   => 'This email is already registered.',
         ]);
         $user = User::create($data);
         if($user){
             Mail::to($user->email)->send(new WelcomeMail($user));
+            event(new Registered($user));
+
             return redirect()->route('login')
-            ->with('success', 'Registration successful! Please login.');
+            ->with('success', 'Registration successful! Please verify your email before accessing dashboard.');
         }
     }
 
@@ -62,6 +67,29 @@ class UserController extends Controller
         } else {
             return redirect()->route('login');
         }
+    }
+
+    public function showEmailVerificationNotice()
+    {
+        return view('auth.verify-email');
+    }
+
+    public function verifyEmail(EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+
+        return redirect()->route('dashboard')->with('verified', 'Email verified successfully.');
+    }
+
+    public function sendVerificationEmail(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard');
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'A new verification link has been sent to your email address.');
     }
 
     public function logout(Request $request){
